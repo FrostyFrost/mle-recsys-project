@@ -31,11 +31,11 @@ class SimilarItems:
         try:
             i2i = self._similar_items.loc[item_id].head(k)
 
-            i2i = {"item_id_2": i2i["sim_item_id_enc"].tolist(), "score": i2i['score'].tolist()}
-            logger.info('FFFFFFFFFF')
-            logger.info(i2i)
-            logger.info(i2i["item_id_2"])
-            logger.info(i2i["score"])
+            i2i = {"item_id_2": i2i["sim_item_id_enc"][1:].tolist(), "score": i2i['score'].tolist()}
+            # logger.info('FFFFFFFFFF')
+            # logger.info(i2i)
+            # logger.info(i2i["item_id_2"])
+            # logger.info(i2i["score"])
             
             #i2i = i2i[["item_id_2", "score"]].to_dict(orient="list")
             # logger.info(i2i)

@@ -38,6 +38,7 @@ class Recommendations:
             logger.error("No recommendations found")
             recs = []
 
+        logger.info(f'recs: {recs}')
         return recs
 
     def stats(self):

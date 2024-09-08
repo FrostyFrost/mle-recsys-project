@@ -52,7 +52,7 @@ async def recommendations_offline(user_id: int, k: int = 100):
     """
 
     recs = rec_store.get(user_id=user_id, k=k)
-
+    logger.info(f"recs2: {recs}")
     return {"recs": recs}
 
 
@@ -107,7 +107,6 @@ async def recommendations(user_id: int, k: int = 100):
 
     recs_offline = recs_offline["recs"]
     recs_online = recs_online["recs"]
-
     recs_blended = []
 
     min_length = min(len(recs_offline), len(recs_online))
@@ -117,12 +116,10 @@ async def recommendations(user_id: int, k: int = 100):
         recs_blended.append(recs_offline[i])
 
     # добавляем оставшиеся элементы в конец
-    recs_blended += recs_online[i+1:]
-    recs_blended += recs_offline[i+1:]
-
+    recs_blended += recs_online[min_length:]
+    recs_blended += recs_offline[min_length:]
     # удаляем дубликаты
     recs_blended = dedup_ids(recs_blended)
-    
         # оставляем только первые k рекомендаций
     recs_blended = recs_blended[:k]
 
