@@ -11,15 +11,15 @@ class Recommendations:
             "request_default_count": 0,
         }
 
-    def load(self, type, path, **kwargs):
+    def load(self, rec_type, path, **kwargs):
         """
         Загружает рекомендации из файла
         """
 
-        logger.info(f"Loading recommendations, type: {type}")
-        self._recs[type] = pd.read_parquet(path, **kwargs)
-        if type == "personal":
-            self._recs[type] = self._recs[type].set_index("user_id")
+        logger.info(f"Loading recommendations, type: {rec_type}")
+        self._recs[rec_type] = pd.read_parquet(path, **kwargs)
+        if rec_type == "personal":
+            self._recs[rec_type] = self._recs[rec_type].set_index("user_id")
         logger.info(f"Loaded")
 
     def get(self, user_id: int, k: int=100):
@@ -46,19 +46,3 @@ class Recommendations:
         logger.info("Stats for recommendations")
         for name, value in self._stats.items():
             logger.info(f"{name:<30} {value} ")
-
-
-# rec_store = Recommendations()
-
-# rec_store.load(
-#     "personal",
-#     '../final_recommendations_feat.parquet',
-#     columns=["user_id", "item_id", "rank"],
-# )
-# rec_store.load(
-#     "default",
-#     '../top_recs.parquet',
-#     columns=["item_id", "rank"],
-# )
-
-# print(rec_store.get(user_id=1049126, k=5)) 

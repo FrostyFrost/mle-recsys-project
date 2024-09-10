@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 class EventStore:
 
     def __init__(self, max_events_per_user=10):
@@ -18,15 +19,21 @@ class EventStore:
         """
         Возвращает события для пользователя
         """
-        try:
+        
+        if user_id in self.events:
             user_events =  self.events[user_id] 
-        except:
+        else:
             user_events = []
 
         return user_events
 
-events_store = EventStore()
 
+# COMMENT:  > Процедурные строки кода стоит помещать в начало файла, чтобы они не затерялись между методами
+# COMMENT:  Но у нас в начале файла описывается класс, а уже дальше идет создание экземпляра этого класса и дальнейшие действия. Перенести events_store = EventStore() в начало будет неправильным. 
+# COMMENT:  Правильным - описание класса в отдельном файле. Но в данном случае в связи с простотой и класса и модуля, не будем плодить сложную структуру :) 
+
+
+events_store = EventStore()
 # создаём приложение FastAPI
 app = FastAPI(title="events")
 
@@ -49,3 +56,4 @@ async def get(user_id: int, k: int = 10):
     events = events_store.get(user_id, k)
 
     return {"events": events}
+

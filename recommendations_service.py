@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from rec_handler import Recommendations
 
+PATH_TO_PERS_RECOMENDATIONS = './recsys/recomendations/recommendations.parquet'
+PATH_TO_TOP_POPULAR = './recsys/recomendations/top_popular.parquet'
 
 logger = logging.getLogger("uvicorn.error")
 rec_store = Recommendations()
@@ -27,12 +29,12 @@ async def lifespan(app: FastAPI):
 
     rec_store.load(
     "personal",
-    './recsys/recomendations/recommendations.parquet',
+    PATH_TO_PERS_RECOMENDATIONS,
     columns=["user_id", "item_id", "rank"],
     )
     rec_store.load(
         "default",
-        './recsys/recomendations/top_popular.parquet',
+        PATH_TO_TOP_POPULAR,
         columns=["item_id", "rank"],
     )
 

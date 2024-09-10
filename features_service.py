@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 import pandas as pd
 from fastapi import FastAPI
 
+PATH_TO_SIMILAR_ITEMS = './recsys/recomendations/similar_items.parquet'
+
 logger = logging.getLogger("uvicorn.error")
 
 class SimilarItems:
@@ -28,20 +30,18 @@ class SimilarItems:
         """
         Возвращает список похожих объектов
         """
+        # COMMENT:  > Здесь тоже можно избежать использование исключения
+        # COMMENT: А я бы оставил, поскольку рекомендации могут отсутствовать по разным причинам (нет пользователя, нет рекомендаций, потерялся\сломался файл с рекомендациями,...) 
+        # COMMENT: Но  добавил помимо обработки KeyError еще и else
+
         try:
             i2i = self._similar_items.loc[item_id].head(k)
-
             i2i = {"item_id_2": i2i["sim_item_id_enc"][1:].tolist(), "score": i2i['score'].tolist()}
-            # logger.info('FFFFFFFFFF')
-            # logger.info(i2i)
-            # logger.info(i2i["item_id_2"])
-            # logger.info(i2i["score"])
-            
-            #i2i = i2i[["item_id_2", "score"]].to_dict(orient="list")
-            # logger.info(i2i)
         except KeyError:
             logger.error("No recommendations found")
             i2i = {"item_id_2": [], "score": []}
+        else:
+            logger.error("problem with similar recomendations")
 
         return i2i
 
@@ -51,7 +51,7 @@ sim_items_store = SimilarItems()
 async def lifespan(app: FastAPI):
     # код ниже (до yield) выполнится только один раз при запуске сервиса
     sim_items_store.load(
-        './recsys/recomendations/similar_items.parquet',
+        PATH_TO_SIMILAR_ITEMS,
         columns=["track_id_enc", "sim_item_id_enc", "score"],
     )
     logger.info("Ready!")
